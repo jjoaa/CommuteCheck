@@ -1,0 +1,104 @@
+﻿<Page x:Class="Kiosk.Pages.CommuteCheckPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:views="clr-namespace:Kiosk.Views"
+      xmlns:converters="clr-namespace:Kiosk.Converters"
+      Title="">
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid Background="Black">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />  <!-- 헤더 -->
+            <RowDefinition Height="*" />     <!-- 콘텐츠 -->
+        </Grid.RowDefinitions>
+
+        <!-- 헤더 -->
+        <views:HeaderView Grid.Row="0" />
+
+        <!-- 닫기 버튼 -->
+        <Button Grid.Row="0"
+                Command="{Binding BackCommand}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Margin="0,0,20,0"
+                Style="{StaticResource ImageButtonStyle}">
+            <Image Source="/Images/btnClose.png" Height="40" />
+        </Button>
+
+        <!-- 콘텐츠 -->
+        <Border Grid.Row="1" Background="#0B1440">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />  <!-- 인사/시간 -->
+                    <RowDefinition Height="*" />     <!-- 출/퇴근 버튼 -->
+                    <RowDefinition Height="Auto" />  <!-- 설정 버튼 -->
+                </Grid.RowDefinitions>
+
+                <!-- 인사 + 시간 -->
+                <StackPanel Grid.Row="0" Margin="60,100,40,0">
+                    <!-- 인사말 -->
+                    <TextBlock FontSize="32" FontWeight="SemiBold" Foreground="White">
+                        <Run Text="{Binding UserName, Mode=OneWay}" />
+                        <Run Text=" 님 안녕하세요." />
+                    </TextBlock>
+
+                    <!-- 시간 -->
+                    <TextBlock Margin="0,8,0,0"
+                               FontSize="22"
+                               Foreground="#B7C0D8"
+                               Text="{Binding AuthTime, StringFormat='인증시간 : {0:yyyy. MM. dd (ddd)  tt hh : mm}'}"
+                               Language="ko-KR" />
+                </StackPanel>
+
+                <!-- 출근/퇴근 버튼 -->
+                <Grid Grid.Row="1" Margin="40,0,40,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 출근 -->
+                    <Button Grid.Column="0"
+                            Style="{StaticResource RoundedCardButton}"
+                            Command="{Binding CheckInCommand}"
+                            Background="#FFA600" BorderThickness="0"
+                            Height="420" Margin="20">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <Image Source="/Images/btnCheckIn.png" Width="120" Height="150" Margin="0 30" />
+                            <TextBlock Text="출 근" Foreground="#FFFFFF" FontSize="46" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- 퇴근 -->
+                    <Button Grid.Column="1"
+                            Style="{StaticResource RoundedCardButton}"
+                            Command="{Binding CheckOutCommand}"
+                            Height="420" Margin="20">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <Image Source="/Images/btnCheckOut.png" Width="120" Height="150" Margin="0 30" />
+                            <TextBlock Text="퇴 근" Foreground="#FFA600" FontSize="46" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- 하단: 설정 버튼 -->
+                <Grid Grid.Row="2" Margin="20,0,20,80">
+                    <Button Style="{StaticResource RoundedCardButton}"
+                            Command="{Binding OpenSettingsCommand}"
+                            Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Background="#6B7280" Foreground="White"
+                            BorderThickness="0"
+                            Height="90" Width="650"
+                            HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Image Source="/Images/btnSetting.png" Width="50" Height="50" />
+                            <TextBlock Text="설 정" FontSize="36" Margin="20 0" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
