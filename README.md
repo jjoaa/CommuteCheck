@@ -53,10 +53,4 @@ CommuteCheck/
 ```
 <br /><br />
 
-## 5. 상세 이미지
-<img width="400" height="600" alt="Image" src="https://github.com/user-attachments/assets/d8186518-4982-466d-b140-f1ec9abd7ac2" />
-<img width="400" height="600" alt="Image" src="https://github.com/user-attachments/assets/dba5ce25-8ec6-4b09-9210-8966161a963c" /> <br/>
-<img width="400" height="600" alt="Image" src="https://github.com/user-attachments/assets/3ad3717a-1af5-4776-bc9b-877ba25ec34c" /> 
-<img width="400" height="800" alt="Image" src="https://github.com/user-attachments/assets/c8e6df87-44d2-442e-b6de-6ece2adbc677" /> <br/>
-<img width="400" height="600" alt="Image" src="https://github.com/user-attachments/assets/fc7f6252-25d7-468f-8fd2-f465d51e6ed6" /> 
-<img width="400" height="600" alt="Image" src="https://github.com/user-attachments/assets/296b394b-14c3-472f-97c8-2ad46121fe19" />  <br/> <br/>
+
