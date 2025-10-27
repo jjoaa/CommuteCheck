@@ -1,0 +1,255 @@
+﻿<Page x:Class="Kiosk.Pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:views="clr-namespace:Kiosk.Views"
+      xmlns:vm="clr-namespace:Kiosk.ViewModels"
+      Title="">
+
+    <Page.Resources>
+
+        <!-- 직원 섹션 -->
+        <DataTemplate DataType="{x:Type vm:SectionStaffViewModel}">
+            <views:StaffSectionView />
+        </DataTemplate>
+
+        <!-- 출퇴근기록 섹션 -->
+        <DataTemplate DataType="{x:Type vm:SectionCommuteViewModel}">
+            <views:CommuteHistorySectionView />
+        </DataTemplate>
+
+        <!-- 기타 리소스 -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <Duration x:Key="SlideDur">0:0:0.18</Duration>
+
+        <!-- 열기 -->
+        <Storyboard x:Key="OpenSidebarSB">
+            <DoubleAnimation Storyboard.TargetName="SidebarTT"
+                             Storyboard.TargetProperty="X"
+                             To="0" Duration="{StaticResource SlideDur}"
+                             DecelerationRatio="0.6" />
+            <DoubleAnimation Storyboard.TargetName="BackdropHost"
+                             Storyboard.TargetProperty="Opacity"
+                             To="1" Duration="{StaticResource SlideDur}" />
+        </Storyboard>
+
+        <!-- 닫기 -->
+        <Storyboard x:Key="CloseSidebarSB">
+            <DoubleAnimation Storyboard.TargetName="SidebarTT"
+                             Storyboard.TargetProperty="X"
+                             To="-360" Duration="{StaticResource SlideDur}"
+                             AccelerationRatio="0.6" />
+            <DoubleAnimation Storyboard.TargetName="BackdropHost"
+                             Storyboard.TargetProperty="Opacity"
+                             To="0" Duration="{StaticResource SlideDur}" />
+        </Storyboard>
+    </Page.Resources>
+
+    <Grid x:Name="Root">
+        <Grid x:Name="MainContent" Background="#F7F8FA">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="90" />                 <!-- Header -->
+                <RowDefinition Height="Auto" />                <!-- Title -->
+                <RowDefinition />                                <!-- List -->
+                <RowDefinition Height="70" />                    <!-- Footer -->
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Background="White" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
+                <Grid Margin="16,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 버튼-사이드바 -->
+                    <Button Style="{StaticResource ImageButtonStyle}"
+                            Width="44" Height="44" HorizontalAlignment="Left"
+                            Click="Side_Open">
+                        <Image Source="/Images/btnBurger.png" Width="40" Height="40" />
+                    </Button>
+                    <TextBlock Grid.Column="1"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"
+                               FontSize="24" FontWeight="SemiBold" Margin="20">
+                        <Run Text="{Binding UserName, Mode=OneWay}" />
+                        <Run Text=" 관리자님 환영합니다." />
+                    </TextBlock>
+                </Grid>
+            </Border>
+
+
+            <!-- 리스트 영역 컨테이너 -->
+            <Border Grid.Row="2" Background="White" BorderBrush="#E6E6E6">
+                <ContentControl Content="{Binding CurrentSectionVM}" />
+            </Border>
+
+            <!-- Footer -->
+            <Grid Grid.Row="3" Margin="30 0 30 40">
+                <Button Style="{StaticResource ImageButtonStyle}"
+                        Command="{Binding ReturnFaceRecognitionCommand}" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="인증화면으로 돌아가기" FontSize="20"
+                                   FontWeight="SemiBold" Foreground="#6B6B6B" />
+                        <Image Source="/Images/arrow.png" Height="20" Margin="10 0" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <!-- [B] 딤 + 클릭시 닫기 -->
+        <Grid x:Name="BackdropHost"
+              Opacity="0"
+              Background="#80000000"
+              IsHitTestVisible="False"
+              Panel.ZIndex="20"
+              MouseLeftButtonDown="BackdropHost_Mouse" />
+
+        <!-- [C] 사이드바  -->
+        <Border x:Name="Sidebar"
+                Width="340"
+                Background="#0C143D"
+                CornerRadius="15"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Stretch"
+                Padding="10"
+                Panel.ZIndex="30">
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="SidebarTT" X="-360" />
+            </Border.RenderTransform>
+
+            <!-- 상단 X 버튼 -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />                     <!-- 0: 헤더/닫기 -->
+                    <RowDefinition Height="Auto" />                     <!-- 1: "근태"+라인 -->
+                    <RowDefinition Height="Auto" />                     <!-- 2: 직원 -->
+                    <RowDefinition Height="Auto" />                     <!-- 3: 출퇴근기록 -->
+                    <RowDefinition Height="*" />                        <!-- 4: 빈 공간-->
+                    <RowDefinition Height="Auto" />                     <!-- 5: 로그아웃(푸터) -->
+                </Grid.RowDefinitions>
+
+                <views:HeaderView Grid.Row="0" />
+
+                <!-- 오른쪽: 버튼 -->
+                <Button Grid.Row="0" Style="{StaticResource ImageButtonStyle}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="Side_Close"
+                        ToolTip="닫기"
+                        AutomationProperties.Name="사이드바 닫기">
+                    <Image Source="/Images/btnClose.png" Height="35" Margin="0,0,8,0" />
+                </Button>
+
+
+                <!-- 사이드바 내용 -->
+                <Grid Grid.Row="1" Margin="0,15,0,8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="1" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="근태" FontSize="24" Foreground="White" FontWeight="SemiBold"
+                               Margin="0,0,0,10" />
+                    <Rectangle Grid.Row="1" Height="1" Fill="#66FFFFFF" />
+                </Grid>
+
+                <!-- 직원 -->
+                <Button Grid.Row="2"
+                        Command="{Binding Open_StaffPage}"
+                        Click="Side_Close"
+                        HorizontalAlignment="Stretch" Margin="10,20,0,30">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButton}">
+                            <Setter Property="Foreground" Value="#444444" />
+                            <Setter Property="FontWeight" Value="SemiBold" /><!-- 비활성: 회색 -->
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSection}"
+                                             Value="{x:Static vm:SettingsSection.Staff}">
+                                    <Setter Property="Foreground" Value="#FFFFFFFF" />  <!-- 활성: 흰색 -->
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Height="34" Margin="0,0,10,0">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <!-- 비활성 기본 아이콘 -->
+                                    <Setter Property="Source" Value="/Images/member3.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding DataContext.CurrentSection,
+                                                     RelativeSource={RelativeSource AncestorType=Button}}"
+                                            Value="{x:Static vm:SettingsSection.Staff}">
+                                            <Setter Property="Source" Value="/Images/member2.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <TextBlock Grid.Column="1" Text="직원" FontSize="20" VerticalAlignment="Center"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    </Grid>
+                </Button>
+
+                <!-- 출퇴근기록 -->
+                <Button Grid.Row="3"
+                        Command="{Binding Open_CommuteHistoryPage}"
+                        Click="Side_Close"
+                        HorizontalAlignment="Stretch" Margin="10,0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButton}">
+                            <Setter Property="Foreground" Value="#444444" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSection}"
+                                             Value="{x:Static vm:SettingsSection.Commute}">
+                                    <Setter Property="Foreground" Value="#FFFFFF" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Height="34" Margin="3,0,20,0">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <!-- 비활성 기본 아이콘 -->
+                                    <Setter Property="Source" Value="/Images/btnCheckIn3.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding DataContext.CurrentSection,
+                                           RelativeSource={RelativeSource AncestorType=Button}}"
+                                            Value="{x:Static vm:SettingsSection.Commute}">
+                                            <!-- 활성 아이콘 -->
+                                            <Setter Property="Source" Value="/Images/btnCheckIn.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <TextBlock Grid.Column="1" Text="출퇴근기록" FontSize="20" VerticalAlignment="Center"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    </Grid>
+                </Button>
+
+                <Grid Grid.Row="5" Margin="10,0,0,50">
+                    <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding Logout}"
+                            HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="로그아웃" FontSize="20" FontWeight="SemiBold" Foreground="#FFFFFF" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
