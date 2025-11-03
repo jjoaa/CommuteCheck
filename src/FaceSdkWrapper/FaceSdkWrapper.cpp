@@ -81,8 +81,8 @@ extern "C" {
             sprintf_s(b, "[FSW] Initialize FAILED: last_error=%d", (int)init.last_error);
             logA(b);
             delete g_sdk; g_sdk = nullptr;
-            return false;     // ← 여기 반드시 세미콜론 필요!
-        }                     // ← 블록 닫기
+            return false;
+        }
 
         auto en = g_sdk->GetFeatureExtension().Enable(true);
         if (!(en.result && en.last_error == alchera::FaceSDK::Error::NoError)) {
@@ -243,67 +243,5 @@ extern "C" {
         std::copy(feat.feature_vector.begin(), feat.feature_vector.end(), out512);
         return true;
     }
-
-    ///* 얼굴 특징 추출 (+ BGR 입력만, 전처리X) */
-    //FACESDK_API bool ExtractFeatureBGR(
-    //    const uint8_t* bgr, int width, int height,
-    //    int rotateDeg, int mirror,
-    //    float* out512, int* err) {
-
-    //    //logA("[FSW] >>> Enter ExtractFeatureBGR");   // 함수 진입
-
-    //    if (err) *err = 0;
-    //    if (!g_sdk) { if (err)*err = -100; return false; }
-    //    if (!bgr || !out512) { if (err)*err = -1;   return false; }
-    //    if (width <= 0 || height <= 0) { if (err)*err = -2; return false; }
-
-    //    // 1) InputImage 구성
-    //    InputImage image{};
-    //    image.bgr_image_buffer = const_cast<uint8_t*>(bgr);
-    //    image.width = static_cast<std::size_t>(width);
-    //    image.height = static_cast<std::size_t>(height);
-    //    logA("[FSW] InputImage set OK");
-    //    // 2) 얼굴 추출
-    //    alchera::FaceSDK::Faces detected = g_sdk->DetectFaceInSingleImage(image);
-
-    //    if (detected.faces.empty()) {
-    //        if (err) *err = -3;
-    //        logA("[FSW] No face detected");
-    //        return false;
-    //    }
-    //    // 3) 가장 큰 얼굴 추출
-    //    size_t pick = 0;
-    //    double bestArea = -1.0;
-
-    //    for (size_t i = 0; i < detected.faces.size(); ++i) {
-    //        const auto& f = detected.faces[i];   // 반드시 즉시 초기화된 참조
-
-    //        double a = static_cast<double>(f.box.width) * static_cast<double>(f.box.height);
-
-    //        // 로그 찍기 (선택 사항)
-    //        char buf[160];
-    //        sprintf_s(buf, "[FSW] face[%zu] box=(%.1f,%.1f,%.1f,%.1f) area=%.1f",
-    //            i, f.box.x, f.box.y, f.box.width, f.box.height, a);
-    //        logA(buf);
-
-    //        if (a > bestArea) {
-    //            bestArea = a;
-    //            pick = i;
-    //        }
-    //    }
-
-    //    const auto& face = detected.faces[pick];
-    //    logA("[FSW] Picked largest face");
-    //    // 간단버전 : 첫 얼굴 사용
-    //    //const auto& face = detected.faces[0]; 
-
-    //    //  4) Feature 추출
-    //    auto feat = g_sdk->GetFeatureExtension().ExtractFeature(image, face);
-    //    if (feat.last_error != alchera::FaceSDK::Error::NoError) { if (err) *err = -6; return false; }
-
-    //    // 5) 복사
-    //    std::copy(feat.feature_vector.begin(), feat.feature_vector.end(), out512);
-    //    return true;     
-    // 
-    //}
 }
+
