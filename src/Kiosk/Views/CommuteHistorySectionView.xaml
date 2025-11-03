@@ -1,0 +1,134 @@
+﻿<UserControl x:Class="Kiosk.Views.CommuteHistorySectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <!-- CommuteList를 날짜별로 그룹 -->
+        <CollectionViewSource x:Key="CommuteView" Source="{Binding CommuteList}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription Converter="{StaticResource DateKeyConverter}" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
+        <!-- 날짜 헤더 -->
+        <GroupStyle x:Key="DateGroupStyle">
+            <GroupStyle.HeaderTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,12,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Rectangle Height="1" Fill="#DADADA" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Name}"
+                                   Margin="12,0"
+                                   FontWeight="Bold"
+                                   Foreground="#333"
+                                   FontSize="14"
+                                   VerticalAlignment="Center" />
+                        <Rectangle Grid.Column="2" Height="1" Fill="#DADADA" VerticalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </GroupStyle.HeaderTemplate>
+        </GroupStyle>
+    </UserControl.Resources>
+    <Grid Background="#F7F8FA">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- 섹션 타이틀 -->
+            <RowDefinition />               <!-- 본문(툴바+리스트) -->
+        </Grid.RowDefinitions>
+
+        <!-- [섹션 타이틀] -->
+        <Grid Grid.Row="0" Margin="40,30,30,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Image Source="/Images/btnCheckIn2.png" Width="50" Height="50" />
+                <TextBlock Text="출퇴근기록" FontSize="35" FontWeight="Bold" Margin="20,5,0,0" Foreground="#0C143D" />
+            </StackPanel>
+        </Grid>
+
+        <!-- [본문] -->
+        <Border Grid.Row="1" Margin="30" Background="White" CornerRadius="12"
+                BorderBrush="#E6E6E6" BorderThickness="1" Padding="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" /> <!-- 툴바 -->
+                    <RowDefinition />               <!-- 리스트 -->
+                </Grid.RowDefinitions>
+
+                <!-- 툴바 -->
+                <Grid Grid.Row="0" Height="60" VerticalAlignment="Top" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" /> <!-- 캘린더 -->
+                        <ColumnDefinition />              <!-- spacer -->
+                        <ColumnDefinition Width="Auto" /> <!-- 버튼 -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 캘린더 -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <ComboBox Style="{StaticResource CleanCombo}"
+                                  ItemContainerStyle="{StaticResource CleanComboItem}"
+                                  ItemsSource="{Binding Years}" SelectedItem="{Binding Year}" Width="130"
+                                  Margin="0,0,0,0" />
+                        <ComboBox Style="{StaticResource ToolbarCombo}"
+                                  ItemContainerStyle="{StaticResource CleanComboItem}"
+                                  ItemsSource="{Binding Months}" SelectedItem="{Binding Month}" Width="150" />
+                        <ComboBox Style="{StaticResource ToolbarCombo}"
+                                  ItemContainerStyle="{StaticResource CleanComboItem}"
+                                  ItemsSource="{Binding UserFilters}"
+                                  SelectedValue="{Binding SelectedUserOid, Mode=TwoWay}"
+                                  Width="200" SelectedValuePath="UserOid" DisplayMemberPath="Name" />
+                    </StackPanel>
+
+                    <!-- 버튼 -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <Button Style="{StaticResource IconButton}" Command="{Binding RefreshCommand}">
+                            <Image Source="/Images/btnRefresh.png" Height="40" Margin="0,0,5,0" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <!-- 리스트 -->
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding Source={StaticResource CommuteView}}"
+                          HeadersVisibility="Column"
+                          ColumnHeaderHeight="44" RowHeight="30"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          CanUserReorderColumns="False" CanUserResizeRows="False"
+                          IsReadOnly="False" AutoGenerateColumns="False"
+                          Style="{StaticResource TableDataGridWhiteBodyStyle}"
+                          ColumnHeaderStyle="{StaticResource TableHeaderStyle}"
+                          RowStyle="{StaticResource NoSelectRowStyle}"
+                          CellStyle="{StaticResource NoSelectCellStyle}"
+                          ScrollViewer.CanContentScroll="False"
+                          EnableRowVirtualization="False"
+                          EnableColumnVirtualization="False"
+                          VirtualizingPanel.IsVirtualizing="False"
+                          VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                          VirtualizingPanel.ScrollUnit="Pixel"
+                          RowHeaderWidth="20">
+
+                    <!-- 날짜 그룹 헤더 적용 -->
+                    <DataGrid.GroupStyle>
+                        <StaticResource ResourceKey="DateGroupStyle" />
+                    </DataGrid.GroupStyle>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="직원" Binding="{Binding UserName}"
+                                            ElementStyle="{StaticResource TableBodyText}" Width="220" />
+                        <DataGridTextColumn Header="출근시간"
+                                            Binding="{Binding CheckIn, StringFormat={}{0:HH:mm}, TargetNullValue=''}"
+                                            ElementStyle="{StaticResource TableBodyText}" Width="140" />
+                        <DataGridTextColumn Header="퇴근시간"
+                                            Binding="{Binding CheckOut, StringFormat={}{0:HH:mm}, TargetNullValue=''}"
+                                            ElementStyle="{StaticResource TableBodyText}" Width="140" />
+                        <DataGridTextColumn Header="상태" Binding="{Binding Status}"
+                                            ElementStyle="{StaticResource TableBodyText}" Width="120"
+                                            Foreground="#ed9e02" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

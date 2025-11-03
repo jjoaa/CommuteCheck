@@ -1,0 +1,147 @@
+﻿<UserControl x:Class="Kiosk.Views.StaffSectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="#F7F8FA">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />  <!-- 섹션 타이틀 -->
+            <RowDefinition />                 <!-- 본문(툴바+리스트) -->
+        </Grid.RowDefinitions>
+
+        <!-- [섹션 타이틀] -->
+        <Grid Grid.Row="0" Margin="40,30,30,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Image Source="/Images/member.png" Width="50" Height="50" />
+                <TextBlock Text="직원" FontSize="35" FontWeight="Bold" Margin="20,5,0,0" Foreground="#0C143D" />
+            </StackPanel>
+        </Grid>
+
+        <!-- [본문] -->
+        <Border Grid.Row="1" Margin="30" Background="White" CornerRadius="12"
+                BorderBrush="#E6E6E6" BorderThickness="1" Padding="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />  <!-- 툴바 -->
+                    <RowDefinition />               <!-- 리스트 -->
+                </Grid.RowDefinitions>
+
+                <!-- 툴바 -->
+                <Grid Grid.Row="0" Height="60" VerticalAlignment="Top" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />   <!-- 라이브니스 토글 -->
+                        <ColumnDefinition />                <!-- spacer -->
+                        <ColumnDefinition Width="Auto" />   <!-- 버튼묶음 -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 토글 -->
+                    <StackPanel Grid.Column="0" Orientation="Vertical"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Margin="5,10,0,0">
+                        <ToggleButton Style="{StaticResource ImageToggle}"
+                                      IsChecked="{Binding IsLivenessOn}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Text="라이브니스" FontSize="14"
+                                   FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="#6B6B6B" />
+                    </StackPanel>
+
+                    <!-- 버튼들 -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding Invite_StaffRegular}">
+                            <Grid>
+                                <Image Source="/Images/btnAdd.png" Height="50" Width="130" Margin="10,0,30,0" />
+                                <TextBlock Text="직원" Foreground="White" FontWeight="SemiBold" FontSize="22"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="30,0,0,0" />
+                            </Grid>
+                        </Button>
+
+                        <Button Style="{StaticResource IconButton}" Command="{Binding RefreshCommand}"
+                                Margin="0,0,10,0">
+                            <Image Source="/Images/btnRefresh.png" Height="40" />
+                        </Button>
+
+                        <!-- 임시직원 버튼
+                        <Button Style="{StaticResource ImageButtonStyle}"
+                                Command="{Binding TemporaryStaff}">
+                            <Grid>
+                                <Image Source="/Images/btnAdd.png" Height="50" Width="130" Margin="15,0,15,0" />
+                                <TextBlock Text="임시" Foreground="White" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           FontSize="22" Margin="40,0,0,0" />
+                            </Grid>
+                        </Button>-->
+
+                    </StackPanel>
+                </Grid>
+
+                <!-- 리스트 -->
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding UsersList}"
+                          AutoGenerateColumns="False"
+                          HeadersVisibility="Column"
+                          ColumnHeaderHeight="44" RowHeight="30"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          CanUserReorderColumns="False" CanUserResizeRows="False"
+                          IsReadOnly="False" SelectionMode="Single" SelectionUnit="FullRow"
+                          Style="{StaticResource TableDataGridWhiteBodyStyle}"
+                          ColumnHeaderStyle="{StaticResource TableHeaderStyle}"
+                          RowStyle="{StaticResource NoSelectRowStyle}"
+                          CellStyle="{StaticResource NoSelectCellStyle}">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="직원" Binding="{Binding UserName}" Width="*"
+                                            ElementStyle="{StaticResource TableBodyText}" />
+
+                        <DataGridTemplateColumn Header="직무" Width="130">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox
+                                        Style="{StaticResource CleanCombo}"
+                                        ItemContainerStyle="{StaticResource CleanComboItem}"
+                                        ItemsSource="{Binding DataContext.RoleOptions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        SelectedValue="{Binding AssignmentCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedValuePath="Id"
+                                        DisplayMemberPath="Name"
+                                        MinWidth="120" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="일반직원" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox
+                                        IsChecked="{Binding IsGeneral, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        IsThreeState="False"
+                                        Style="{StaticResource ImageCheckbox}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="관리자" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox
+                                        IsChecked="{Binding IsAdmin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        IsThreeState="False"
+                                        Style="{StaticResource ImageCheckbox}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="삭제" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource IconButton}" CommandParameter="{Binding}"
+                                            Command="{Binding DataContext.DeleteUserCommand,
+                                                RelativeSource={RelativeSource AncestorType=DataGrid}}">
+                                        <Image Source="/Images/delete.png" Height="20" />
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
